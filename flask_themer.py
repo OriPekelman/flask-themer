@@ -94,10 +94,11 @@ class FileSystemThemeLoader(ThemeLoader):
 
 
 class Themer:
-    def __init__(self, app=None, *, loaders=None):
+    def __init__(self, app=None, *, loaders=None, fallback_theme='default'):
         self.loaders = []
         self.themes = {}
         self._theme_resolver = None
+        self.fallback_theme = fallback_theme
 
         if app is not None:
             self.init_app(app, loaders=loaders)
@@ -158,8 +159,16 @@ def render_template(path, *args, **kwargs):
     try:
         return flask_render_template(lookup_theme_path(path), *args, **kwargs)
     except TemplateNotFound:
+        return flask_render_template(lookup_fallback_theme_path(path), *args, **kwargs)
+    else:
         return flask_render_template(path, *args, **kwargs)
 
+def lookup_fallback_theme_path(path):
+    """Given the path to a template, lookup the "real" path for the fallback
+    theme.
+    """
+    themer = _current_themer()
+    return f'{MAGIC_PATH_PREFIX}/{themer.fallback_theme}/{path}'
 
 def lookup_theme_path(path):
     """Given the path to a template, lookup the "real" path after resolving the

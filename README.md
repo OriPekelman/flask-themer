@@ -104,6 +104,15 @@ path that Jinja can use to load it.
 {% endblock %}
 ```
 
+## Fallback theme
+
+You can define a default fallback theme such as that if you have not implemented one of the templates in one of your themes it can pick up the corresponding one from a the default template. By default it is called `default` to change the default theme:
+
+```python
+app = Flask(__name__)
+themer = Themer(app, fallback_theme="another_default")
+```
+
 ## Theme Loaders
 
 _Theme_ loaders are the mechanism by which Flask-Themer discovers what themes
